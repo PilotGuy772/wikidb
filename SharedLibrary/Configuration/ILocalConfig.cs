@@ -9,4 +9,5 @@ public interface ILocalConfig
     public void ProcessCommandLineArguments(string[] args); // processes command-line arguments
     public string? TargetDatabase { get; } // stores the name of the database to use.
     public string? TargetWiki { get; } // stores the name of the wiki to use.
+    public bool Verbose { get; } // stores whether or not to print verbose output.
 }

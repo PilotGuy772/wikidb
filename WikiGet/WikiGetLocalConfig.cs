@@ -2,7 +2,7 @@ using SharedLibrary.Configuration;
 
 namespace WikiGet;
 
-public class LocalConfig : ILocalConfig
+public class WikiGetLocalConfig : ILocalConfig
 {
     //all command line arguments are represented here as public fields.
     //this utility is JUST for downloading pages
@@ -48,10 +48,14 @@ public class LocalConfig : ILocalConfig
     //if this is not specified, the program will use the default wiki.
     public string? TargetWiki { get; private set; }
     
+    //verbose: whether to print verbose output.
+    //this is controlled by -v or --verbose. If this argument is specified, the program will print verbose output.
+    public bool Verbose { get; private set; }
+
     //page: the page to download.
     //this is controlled by any positional args that are not attached to flags.
     //at least one target page is required.
-    public string[] TargetPages { get; private set; }
+    public string[] TargetPages { get; private set; } = Array.Empty<string>();
     
     //output: where to output the downloaded pages.
     //by default, the program will print the downloaded pages to the console.
@@ -92,6 +96,12 @@ public class LocalConfig : ILocalConfig
 
     public void ProcessCommandLineArguments(string[] args)
     {
+        if (args.Length == 0)
+        {
+            Console.WriteLine("fatal: expected an argument");
+            Environment.Exit(1);
+        }
+        
         List<string> pages = new();
         for (var i = 0; i < args.Length; i++)
         {
@@ -136,6 +146,9 @@ public class LocalConfig : ILocalConfig
                         case "index":
                             Index = true;
                             break;
+                        case "verbose":
+                            Verbose = true;
+                            break;
                     }
                 }
 
@@ -143,41 +156,49 @@ public class LocalConfig : ILocalConfig
                 else
                 {
                     //switch-case for all short flags
-                    switch (args[i][1])
+                    foreach (char a in args[i])
                     {
-                        case 'r': //recursive
-                            Recursion = int.Parse(args[++i]);
-                            break;
-                        case 's': //search
-                            //this is complicated so I won't implement it yet
-                            break;
-                        case 'h': //help
-                            Help = true;
-                            break;
-                        case 'D': //database
-                            TargetDatabase = args[++i];
-                            break;
-                        case 'W':
-                            TargetWiki = args[++i];
-                            break;
-                        case 'o':
-                            Output = args[++i];
-                            break;
-                        case 'm':
-                            Markdown = true;
-                            break;
-                        case 'f':
-                            ForceStdout = true;
-                            break;
-                        case 'F':
-                            ForceOverwrite = true;
-                            break;
-                        case 'M':
-                            Minify = true;
-                            break;
-                        case 'i':
-                            Index = true;
-                            break;
+                        switch (a)
+                        {
+                            case 'r': //recursive
+                                Recursion = int.Parse(args[++i]);
+                                break;
+                            case 's': //search
+                                //this is complicated so I won't implement it yet
+                                break;
+                            case 'h': //help
+                                Help = true;
+                                break;
+                            case 'D': //database
+                                TargetDatabase = args[++i];
+                                break;
+                            case 'W':
+                                TargetWiki = args[++i];
+                                break;
+                            case 'o':
+                                Output = args[++i];
+                                break;
+                            case 'm':
+                                Markdown = true;
+                                break;
+                            case 'f':
+                                ForceStdout = true;
+                                break;
+                            case 'F':
+                                ForceOverwrite = true;
+                                break;
+                            case 'M':
+                                Minify = true;
+                                break;
+                            case 'i':
+                                Index = true;
+                                break;
+                            case 'v':
+                                Verbose = true;
+                                break;
+                            default:
+                                throw new ArgumentException($"Unknown argument: {a}");
+                        }
                     }
                 }
             }

@@ -1,4 +1,5 @@
 using System.Xml;
+using SharedLibrary.Application.Logging;
 using SharedLibrary.Configuration.Connections;
 
 namespace SharedLibrary.Configuration;
@@ -27,7 +28,10 @@ public class GlobalConfig
         if (File.Exists("~/.config/wikidb/config.xml"))
             pathToConfigFile = "~/.config/wikidb/config.xml";
         else if(File.Exists("/etc/wikidb/config.xml"))
+        {
             pathToConfigFile = "/etc/wikidb/config.xml";
+            Logger.Log("Using system-wide configuration file.", InfoTier.Info);
+        }
         else
             throw new FileNotFoundException("Could not find config file.");
         
@@ -115,11 +119,13 @@ public class GlobalConfig
                             <destination>/head</destination>
 
                             <path>/etc/wikidb/wikis/archwiki/style</path>
+                            <place>before</place>
                         </inject>
 
                         <inject>
                             <destination>/body</destination>
                             <path>/etc/wikidb/wikis/archwiki/header</path>
+                            <place>before</place>
                         </inject>
                         
                     </injections>
@@ -163,6 +169,8 @@ public class GlobalConfig
                 let path =
                     injectionNode["path"]?.InnerText ??
                     throw new InvalidDataException("The configuration file is malformed.")
+                let place =
+                    injectionNode["place"]?.InnerText == "before" //default is after. If an invalid value is specified, default.
                 select new Injection(destination, path)).ToList()
             
             let removals = (from XmlNode removalNode in wikiNode["removals"]?.ChildNodes ?? null       //removals are not mandatory

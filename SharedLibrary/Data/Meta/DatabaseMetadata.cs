@@ -45,7 +45,7 @@ public class DatabaseMetadata
         XmlNode databaseNode = doc.GetElementsByTagName("database")[0] ?? throw new InvalidDataException("A database metadata file is malformed. Affected database: \"" + connection.Name + "\"");
         string name = databaseNode["name"]?.InnerText ?? throw new InvalidDataException("A database metadata file is malformed. Affected database: \"" + connection.Name + "\"");
         if (!name.Equals(connection.Name))
-            Logger.Log("The database name in the metadata file does not match the database name in the config file. This may cause issues.", Tier.Warning);
+            Logger.Log("The database name in the metadata file does not match the database name in the config file. This may cause issues.", InfoTier.Warning);
 
         XmlNodeList wikiNodes = databaseNode["wikis"]?.ChildNodes ?? throw new InvalidDataException("A database metadata file is malformed. Affected database: \"" + connection.Name + "\"");
         

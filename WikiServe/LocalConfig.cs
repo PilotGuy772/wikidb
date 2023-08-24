@@ -29,8 +29,11 @@ public class LocalConfig : ILocalConfig
     // wiki: the wiki to target
     // NOTE: this does nothing and is a technical requirement of the ILocalConfig interface.
     public string? TargetWiki { get; private set; }
-        
-        
+    
+    // verbose: whether to print verbose output
+    // this is always true because nothing happens in the terminal unless verbose is true.
+    public bool Verbose { get; } = true;
+
 
     public void ProcessCommandLineArguments(string[] args)
     {

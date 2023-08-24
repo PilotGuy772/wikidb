@@ -1,6 +1,6 @@
 namespace SharedLibrary.Application.Logging;
 
-public enum Tier
+public enum InfoTier
 {
     Info = 3,
     Warning = 2,

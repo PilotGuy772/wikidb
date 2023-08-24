@@ -58,6 +58,10 @@ public class LocalConfig : ILocalConfig
     //This is controlled by -W or --wiki. If this argument is specified, the program will use the specified wiki. If this argument is not specified, the program will use the default wiki.
     public string? TargetWiki { get; private set; }
     
+    //verbose: whether or not to print verbose output.
+    //This is controlled by -v or --verbose. If this argument is specified, the program will print verbose output.
+    public bool Verbose { get; private set; }
+
     public string? TargetPage { get; private set; }
     
 
@@ -102,6 +106,9 @@ public class LocalConfig : ILocalConfig
                         i++;
                         TargetDatabase = args[i];
                         break;
+                    case "verbose":
+                        Verbose = true;
+                        break;
                     default:
                         throw new ArgumentException($"Unknown argument: {args[i]}");
                 }
@@ -145,6 +152,9 @@ public class LocalConfig : ILocalConfig
                         case 'W':
                             i++;
                             TargetWiki = args[i];
+                            break;
+                        case 'v':
+                            Verbose = true;
                             break;
                         default:
                             throw new ArgumentException($"Unknown argument: {c}");
