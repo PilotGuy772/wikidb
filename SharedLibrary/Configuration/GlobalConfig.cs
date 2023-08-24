@@ -26,17 +26,24 @@ public class GlobalConfig
     {
         string pathToConfigFile;
         if (File.Exists("~/.config/wikidb/config.xml"))
+        {
             pathToConfigFile = "~/.config/wikidb/config.xml";
+        }
         else if(File.Exists("/etc/wikidb/config.xml"))
         {
             pathToConfigFile = "/etc/wikidb/config.xml";
-            Logger.Log("Using system-wide configuration file.", InfoTier.Info);
         }
         else
             throw new FileNotFoundException("Could not find config file.");
         
         XmlDocument doc = new();
         doc.Load(pathToConfigFile);
+        //remove comments cuz I guess System.Xml doesn't do that for you
+        XmlNodeList? comments = doc.SelectNodes("//comment()");
+        //remove all comments
+        if (comments != null)
+            foreach (XmlNode comment in comments)
+                comment.ParentNode?.RemoveChild(comment);
 
         XmlNodeList databaseNodes = doc.GetElementsByTagName("database");
         return from XmlNode databaseNode in databaseNodes
@@ -52,15 +59,26 @@ public class GlobalConfig
     public static GlobalConfig ReadFromConfigFile(string? db = null, string? wiki = null)
     {
         string pathToConfigFile;
-        if (File.Exists("~/.config/wikidb/config.xml"))
-            pathToConfigFile = "~/.config/wikidb/config.xml";
+        if (File.Exists(Path.Combine(Environment.GetEnvironmentVariable("HOME") ?? string.Empty, ".config/wikidb/config.xml")))
+        {
+            pathToConfigFile = Path.Combine(Environment.GetEnvironmentVariable("HOME") ?? string.Empty, ".config/wikidb/config.xml");
+        }
         else if(File.Exists("/etc/wikidb/config.xml"))
+        {
             pathToConfigFile = "/etc/wikidb/config.xml";
+        }
         else
             throw new FileNotFoundException("Could not find config file.");
         
         XmlDocument doc = new();
         doc.Load(pathToConfigFile);
+        
+        //remove comments cuz I guess System.Xml doesn't do that for you
+        XmlNodeList? comments = doc.SelectNodes("//comment()");
+        //remove all comments
+        if (comments != null)
+            foreach (XmlNode comment in comments)
+                comment.ParentNode?.RemoveChild(comment);
         
         // database connections
         /*
@@ -171,7 +189,7 @@ public class GlobalConfig
                     throw new InvalidDataException("The configuration file is malformed.")
                 let place =
                     injectionNode["place"]?.InnerText == "before" //default is after. If an invalid value is specified, default.
-                select new Injection(destination, path)).ToList()
+                select new Injection(destination, path, place)).ToList()
             
             let removals = (from XmlNode removalNode in wikiNode["removals"]?.ChildNodes ?? null       //removals are not mandatory
                 let type = removalNode.ChildNodes[0].Name switch
@@ -179,7 +197,7 @@ public class GlobalConfig
                     "id" => RemovalType.Id,
                     "xpath" => RemovalType.Xpath,
                     "tag" => RemovalType.TagType,
-                    _ => throw new InvalidDataException("The configuration file is malformed.")
+                    _ => throw new InvalidDataException("The configuration file is malformed. thing: " + removalNode.ChildNodes[0].Name)
                 }
                 let value =
                     removalNode.ChildNodes[0].InnerText ??

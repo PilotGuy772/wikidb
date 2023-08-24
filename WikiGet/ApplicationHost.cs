@@ -1,3 +1,4 @@
+using System.Xml.XPath;
 using SharedLibrary.Application;
 using SharedLibrary.Configuration;
 
@@ -49,7 +50,10 @@ public class ApplicationHost
                 case InvalidDataException:
                     Console.Error.WriteLine("hint: a configuration or metadata file is malformed. You will have to fix this manually.\nhint: for help, this project's GitHub wiki may have examples.");
                     break;
-                case ArgumentException:
+                /*case ArgumentException:
+                    break;*/
+                case XPathException:
+                    Console.Error.WriteLine("hint: verify the correctness of your XPath queries in the config file.");
                     break;
                 case FileNotFoundException:
                     Console.Error.WriteLine("hint: copy or write a configuration file to ~/.config/wikidb/config.xml or /etc/wikidb/config.xml. Examples may be found on this project's GitHub wiki.");

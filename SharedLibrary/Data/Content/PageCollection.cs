@@ -12,6 +12,11 @@ public class PageCollection : IEnumerable<Page>
         _pages = pages;
     }
 
+    public Page First()
+    {
+        return _pages.First();
+    }
+    
     public IEnumerator<Page> GetEnumerator()
     {
         return new PageEnumerator(_pages);

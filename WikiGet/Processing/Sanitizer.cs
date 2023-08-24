@@ -1,3 +1,4 @@
+using System.Xml.XPath;
 using HtmlAgilityPack;
 using SharedLibrary.Configuration.Connections;
 using SharedLibrary.Data.Content;
@@ -57,13 +58,17 @@ public class Sanitizer
         {
             if (inject.InjectBefore)
             {
-                doc.DocumentNode.SelectNodes(inject.DestinationXpath).First()
-                    .PrependChild(HtmlNode.CreateNode(ProcessContentInjections(inject.Html, page.Url)));
+                foreach (HtmlNode selectNode in doc.DocumentNode.SelectNodes(inject.DestinationXpath)  ?? throw new XPathException("The XPath expression " + inject.DestinationXpath + " did not match any nodes in the document.", new NullReferenceException()))
+                {
+                    selectNode.PrependChild(HtmlNode.CreateNode(ProcessContentInjections(inject.Html, page.Url)));
+                }
             }
             else
             {
-                doc.DocumentNode.SelectNodes(inject.DestinationXpath).First()
-                    .AppendChild(HtmlNode.CreateNode(ProcessContentInjections(inject.Html, page.Url)));
+                foreach (HtmlNode selectNode in doc.DocumentNode.SelectNodes(inject.DestinationXpath) ?? throw new XPathException("The XPath expression " + inject.DestinationXpath + " did not match any nodes in the document.", new NullReferenceException()))
+                {
+                    selectNode.AppendChild(HtmlNode.CreateNode(ProcessContentInjections(inject.Html, page.Url)));
+                }
             }
         }
         

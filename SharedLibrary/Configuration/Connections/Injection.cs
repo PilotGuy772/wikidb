@@ -11,9 +11,10 @@ public struct Injection
     public string DestinationXpath; // The XPath statement representing the element to inject the HTML into.
     public bool InjectBefore; // Whether or not to inject the HTML before the element. If false, injects after the element.
 
-    public Injection(string destination, string pathToHtml, bool injectBefore = true)
+    public Injection(string destination, string pathToHtml, bool injectBefore = false)
     {
         DestinationXpath = destination;
         Html = File.Exists(pathToHtml) ? File.ReadAllText(pathToHtml) : throw new FileNotFoundException("Could not find the HTML file referenced by injection order at path: " + pathToHtml);
+        InjectBefore = injectBefore;
     }
 }

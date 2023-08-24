@@ -26,6 +26,11 @@ public class WikiConnection
         Url = url;
         DownloadReferencedImages = downloadReferencedImage; // NOT IMPLEMENTED YET
         Injections = injections.ToArray();
-        Removals = removals.ToArray();
+        List<Removal> removalsList = 
+            (from removal in removals 
+                let names = removal.Value.Split(' ') 
+                from id in names 
+                select new Removal(removal.Type, id)).ToList();
+        Removals = removalsList.ToArray();
     }
 }
