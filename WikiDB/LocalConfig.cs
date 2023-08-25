@@ -17,6 +17,10 @@ public class LocalConfig : ILocalConfig
     //When -W is used alone, the program will list all pages that are members of that wiki across all databases
 
 
+    //build mode: if a database is listed in the config file but has not yet been initialized, this generates necessary files and directories
+    //This is controlled by -b or --build. It should be used together with -D, otherwise the default database will be specified.
+    public bool Build { get; private set; }
+    
     //long list mode: list all databases, all wikis in each database, and all pages in each wiki.
     //This is controlled by -L or --long-list. If this argument is specified, the program will list all databases and all wikis in each database and then exit.
     public bool LongList { get; private set; }
@@ -109,6 +113,9 @@ public class LocalConfig : ILocalConfig
                     case "verbose":
                         Verbose = true;
                         break;
+                    case "build":
+                        Build = true;
+                        break;
                     default:
                         throw new ArgumentException($"Unknown argument: {args[i]}");
                 }
@@ -155,6 +162,9 @@ public class LocalConfig : ILocalConfig
                             break;
                         case 'v':
                             Verbose = true;
+                            break;
+                        case 'b':
+                            Build = true;
                             break;
                         default:
                             throw new ArgumentException($"Unknown argument: {c}");

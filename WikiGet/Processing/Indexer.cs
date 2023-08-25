@@ -38,6 +38,11 @@ public static class Indexer
          *  </page>
          */
 
+        if (!File.Exists(Path.Combine(connection.Path, "database.xml")))
+        {
+            throw new InvalidOperationException("The requested local database has not yet been initialized.");
+        }
+
 
         XmlDocument pageMetadata = new();
         
@@ -138,18 +143,11 @@ public static class Indexer
         XmlDocument databaseMetadata = new();
         databaseMetadata.Load(Path.Combine(connection.Path, "database.xml"));
         
-        //increment the page counter
-        XmlNode pageCounter = databaseMetadata.GetElementsByTagName("pageCounter")[0] ?? throw new InvalidDataException("A database metadata file is malformed. Affected file: " + databaseMetadata);
-        pageCounter.InnerText = (int.Parse(pageCounter.InnerText) + 1).ToString();
-        
-        //add self to the database metadata file
-        //check if the wiki we are downloading from is indexed in the DB yet
         XmlNodeList wikis = databaseMetadata.GetElementsByTagName("wiki");
         XmlNode? wikiNode = wikis.Cast<XmlNode>()
             .FirstOrDefault(wiki => 
-                wiki.SelectSingleNode("name")?.InnerText == connection.Name
-                );
-        
+                wiki.SelectSingleNode("name")?.InnerText == globalConfig.WikiConnection.Name
+            );
         //if it's null, we gotta create it
         if (wikiNode == null)
         {
@@ -158,26 +156,48 @@ public static class Indexer
             //create a new wiki node
             wikiNode = wikisNode.AppendChild(databaseMetadata.CreateElement("wiki")) ?? throw new NullReferenceException();
             //inside the wiki node, create a name node and set its value to the name of the wiki
-            wikiNode.AppendChild(databaseMetadata.CreateElement("name"))!.InnerText = connection.Name;
+            wikiNode.AppendChild(databaseMetadata.CreateElement("name"))!.InnerText = globalConfig.WikiConnection.Name;
             //create a new pages node and add the current page to it
-            XmlNode pagesNode = wikiNode.AppendChild(databaseMetadata.CreateElement("pages"))!;
-            pagesNode.AppendChild(databaseMetadata.CreateElement("page"))!.InnerText = page.Title;
+            wikiNode.AppendChild(databaseMetadata.CreateElement("pages"));
         }
         
-        //if it's not null, we just have to find it and add a reference to the current page to it
-        else
+        //check to see if there is already a <page> element with our page name as its value
+        //if there is, we don't need to do anything
+        //if there isn't, we need to add one
+        XmlNodeList pages = databaseMetadata.GetElementsByTagName("page");
+        if (pages.Cast<XmlNode>().FirstOrDefault(pageNode => pageNode.InnerText == page.Title) == null)
         {
+             //increment the page counter
+            XmlNode pageCounter = databaseMetadata.GetElementsByTagName("pageCounter")[0] ?? throw new InvalidDataException("A database metadata file is malformed. Affected file: " + databaseMetadata);
+            pageCounter.InnerText = (int.Parse(pageCounter.InnerText) + 1).ToString();
+            
+            //add self to the database metadata file
+            //check if the wiki we are downloading from is indexed in the DB yet
+
+            //if it's not null, we just have to find it and add a reference to the current page to it
+            
+            
             //first, find the wiki node that we want to add the page to
             //the node should be a 'wiki' type and have a child 'name' node named after the wiki we are downloading from
             //we already have the wiki node, so we just have to find the pages node
             XmlNode pagesNode = wikiNode.SelectSingleNode("pages") ?? throw new InvalidDataException("A database metadata file is malformed. Affected file: " + databaseMetadata);
             //now, add the page to the pages node
             pagesNode.AppendChild(databaseMetadata.CreateElement("page"))!.InnerText = page.Title;
+            
+            //the database metadata file is now up-to-date
         }
-        //the database metadata file is now up-to-date
+        
+       
         
         //now we can write things from memory to disk
         //the first step is to write the page
+        if (!Directory.Exists(Path.GetDirectoryName(page.Path))) Directory.CreateDirectory(Path.GetDirectoryName(page.Path) ?? throw new Exception("you failed"));
         File.WriteAllText(page.Path, page.Content);
+        
+        //next, write the page metadata file
+        File.WriteAllText(page.Path + ".xml", pageMetadata.InnerXml);
+        
+        //then, write the database metadata file
+        databaseMetadata.Save(Path.Combine(connection.Path, "database.xml"));
     }
 }
