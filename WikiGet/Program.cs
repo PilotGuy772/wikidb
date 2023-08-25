@@ -8,6 +8,6 @@ internal static class Program
     {
         ILocalConfig localConfig = new WikiGetLocalConfig();
         localConfig.ProcessCommandLineArguments(args);
-        return new ApplicationHost(localConfig, GlobalConfig.ReadFromConfigFile()).Run(args);
+        return new ApplicationHost(localConfig, GlobalConfig.ReadFromConfigFile(localConfig.TargetDatabase, localConfig.TargetWiki)).Run(args);
     }
 }

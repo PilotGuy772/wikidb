@@ -56,7 +56,7 @@ public class GlobalConfig
             select new DatabaseConnection(name, root);
     }
 
-    public static GlobalConfig ReadFromConfigFile(string? db = null, string? wiki = null)
+    public static GlobalConfig ReadFromConfigFile(string? db, string? wiki)
     {
         string pathToConfigFile;
         if (File.Exists(Path.Combine(Environment.GetEnvironmentVariable("HOME") ?? string.Empty, ".config/wikidb/config.xml")))

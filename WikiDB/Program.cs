@@ -9,6 +9,6 @@ internal static class Program
     {
         ILocalConfig localConfig = new LocalConfig();
         localConfig.ProcessCommandLineArguments(args);
-        return new ApplicationHost(Protocol.Index, localConfig, GlobalConfig.ReadFromConfigFile()).Run(args);
+        return new ApplicationHost(Protocol.Index, localConfig, GlobalConfig.ReadFromConfigFile(localConfig.TargetDatabase, localConfig.TargetWiki)).Run(args);
     }
 }

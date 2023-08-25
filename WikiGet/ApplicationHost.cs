@@ -52,9 +52,9 @@ public class ApplicationHost
                     break;
                 /*case ArgumentException:
                     break;*/
-                case XPathException:
+                /*case XPathException:
                     Console.Error.WriteLine("hint: verify the correctness of your XPath queries in the config file.");
-                    break;
+                    break;*/
                 case FileNotFoundException:
                     Console.Error.WriteLine("hint: copy or write a configuration file to ~/.config/wikidb/config.xml or /etc/wikidb/config.xml. Examples may be found on this project's GitHub wiki.");
                     break;

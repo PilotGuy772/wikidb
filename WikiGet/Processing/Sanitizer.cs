@@ -33,6 +33,7 @@ public class Sanitizer
             switch (remove.Type)
             {
                 case RemovalType.Xpath:
+                    //Console.Error.WriteLine("info: trying to remove XPath: " + remove.Value);
                     HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes(remove.Value);
                     if (nodes != null)
                     {

@@ -160,6 +160,7 @@ public class WikiGetLocalConfig : ILocalConfig
                     {
                         switch (a)
                         {
+                            case '-': break;
                             case 'r': //recursive
                                 Recursion = int.Parse(args[++i]);
                                 break;
@@ -170,13 +171,16 @@ public class WikiGetLocalConfig : ILocalConfig
                                 Help = true;
                                 break;
                             case 'D': //database
-                                TargetDatabase = args[++i];
+                                i++;
+                                TargetDatabase = args[i];
                                 break;
                             case 'W':
-                                TargetWiki = args[++i];
+                                i++;
+                                TargetWiki = args[i];
                                 break;
                             case 'o':
-                                Output = args[++i];
+                                i++;
+                                Output = args[i];
                                 break;
                             case 'm':
                                 Markdown = true;
