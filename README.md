@@ -1,5 +1,7 @@
 # WikiDB
 
+___CAUTION: This application is in an unfinished development stage. It does not work. DO not use it yet. Development is active, but you will have to be patient for the first release before I can in any way recommend using this utility.___
+
 WikiDB is a lightweight wiki downloader meant to allow you to download, archive, and serve pages from the internet. While its original purpose is to download and sanitize pages from wikis (especially the Arch Wiki and other MediaWiki instances), it can be use to download any page from the internet.
 
 WikiDB is written in C# / .NET Core 7. It is written exclusively for Linux, but support for Windows, MacOS, and BSD systems may come in the future. All source code is open source and licensed under GNU GPL v3.
