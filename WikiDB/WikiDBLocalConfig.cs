@@ -16,14 +16,9 @@ public class WikiDBLocalConfig : ILocalConfig
      * -> Page List Mode: When -lp is used together, this lists all registered pages.
      * -> Info Mode: When -i is used together with any of the above modes, all accessible information about each row is also listed.
      * -> Column Mode: When -c <column-name> is used together with any of the above modes, ONLY the specified column is shown. This option may be used as many times as desired to produce multiple columns.
-     * -> Specific List Mode - Database: When -D <database>, all pages in that database are listed. The output is not visualized; it is just a dump of the requested columns.
-     * -> Specific List Mode - Wiki: When -W <wiki>, all pages in that wiki are listed, agnostic of the database (all databases are searched).
-     * -> Specific List Mode - Page: When -P <page>, all pages matching the name are listed, agnostic of the wiki or database.
-     * Different Specific List Modes may be used in conjunction with each other to narrow down the output.
-     *      -> -W & -D : all pages in the requested wiki in the requested database are listed.
-     *      -> -W & -P : all pages throughout all databases that have a matching wiki and matching name are listed.
-     *      -> -D & -P : all pages throughout the requested database that have a matching name are listed.
-     *      -> -W, -D, & -P : all pages matching the name that are a member of the requested database and wiki are listed.
+     * -> Specific List Mode: Lists only the content one tier below the lowest tiered argument. For example, if -D is used, only the wikis in the specified database are listed. If -W is used, only the pages in the specified wiki are listed.
+     *      -> These are specified by -D and -W. When -D is used, the program will list only the wikis in the specified database. When -W is used, the program will list only the pages in the specified wiki.
+     *      -> When the two are used together, the program will list only the pages in the specified wiki in the specified database.
      *
      * Specific List Mode is incompatible with traditional list modes (Wiki, Database, or Page List Mode).
      */
@@ -71,12 +66,6 @@ public class WikiDBLocalConfig : ILocalConfig
     //wiki specific list mode: the wiki to use for specific list mode
     //this is controlled by -W or --wiki. If this argument is specified, the program will use the specified wiki.
     public string? TargetWiki { get; private set; }
-    
-    //page specific list mode: the page to use for specific list mode
-    //this is controlled by -P or --page. If this argument is specified, the program will use the specified page.
-    public string? TargetPage { get; private set; }
-    
-
 
 
     // DATABASE MANIPULATION //
@@ -150,7 +139,6 @@ public class WikiDBLocalConfig : ILocalConfig
                     case "page-list-mode":
                         PageListMode = true;
                         i++;
-                        TargetPage = args[i];
                         break;
                     case "info":
                         InfoMode = true;
@@ -168,14 +156,9 @@ public class WikiDBLocalConfig : ILocalConfig
                         i++;
                         TargetWiki = args[i];
                         break;
-                    case "page":
-                        i++;
-                        TargetPage = args[i];
-                        break;
                     case "page-delete":
                         PageDelete = true;
                         i++;
-                        TargetPage = args[i];
                         break;
                     case "wiki-delete":
                         WikiDelete = true;
