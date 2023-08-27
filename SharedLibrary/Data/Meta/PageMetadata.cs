@@ -52,7 +52,9 @@ public static class PageMetadata
 
     public static Page GetPageWithoutContent(string title, GlobalConfig config)
     {
-        var pathToMetadata = $"{config.DatabaseConnection.Path}/pages/{config.WikiConnection.Name}/{title}.html.meta";
+        string pathToMetadata =
+            Path.Combine(config.DatabaseConnection.Path.Replace("~", Environment.GetEnvironmentVariable("HOME")),
+                "pages", config.WikiConnection.Name, title + ".html.xml");
 
         XmlDocument doc = new();
         doc.Load(pathToMetadata);

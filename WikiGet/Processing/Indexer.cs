@@ -48,14 +48,14 @@ public static class Indexer
         
         //generate the XML config file
         XmlElement root = pageMetadata.CreateElement("page");
-        root.AppendChild(pageMetadata.CreateElement("name"))!.InnerText = page.Title;
+        root.AppendChild(pageMetadata.CreateElement("name"))!.InnerText = page.Name;
         root.AppendChild(pageMetadata.CreateElement("parent"))!.InnerText = page.Parent ?? "";
         root.AppendChild(pageMetadata.CreateElement("url"))!.InnerText = page.Url;
         root.AppendChild(pageMetadata.CreateElement("path"))!.InnerText = page.Path ?? "";
         XmlNode children = root.AppendChild(pageMetadata.CreateElement("children")) ?? throw new NullReferenceException();
         foreach (Page child in page.Children)
         {
-            children.PrependChild(pageMetadata.CreateElement("child"))!.InnerText = child.Title;
+            children.PrependChild(pageMetadata.CreateElement("child"))!.InnerText = child.Name;
         }
         
         pageMetadata.AppendChild(root);
@@ -80,7 +80,7 @@ public static class Indexer
             if (!File.Exists(parentPath))
             {
                 Logger.Log(
-                    "The downloaded page \"" + page.Title +
+                    "The downloaded page \"" + page.Name +
                     "\" is a child page, but its parent has not been downloaded yet.", InfoTier.Error);
                 Logger.Log("The page cannot be written to the database without its parent.", InfoTier.Warning);
                 Logger.Log("Parent page name: " + page.Parent, InfoTier.Warning);
@@ -111,9 +111,9 @@ public static class Indexer
             XmlNode childrenNode = parentMetadata.GetElementsByTagName("children")[0] ??
                                    throw new InvalidDataException(
                                        "A page metadata file is malformed. Affected file: " + parentMetadata);
-            if (childrenNode.SelectSingleNode("child[text()='" + page.Title + "']") == null)
+            if (childrenNode.SelectSingleNode("child[text()='" + page.Name + "']") == null)
             {
-                childrenNode.AppendChild(parentMetadata.CreateElement("child"))!.InnerText = page.Title;
+                childrenNode.AppendChild(parentMetadata.CreateElement("child"))!.InnerText = page.Name;
             }
 
             //and save to disk
@@ -165,7 +165,7 @@ public static class Indexer
         //if there is, we don't need to do anything
         //if there isn't, we need to add one
         XmlNodeList pages = databaseMetadata.GetElementsByTagName("page");
-        if (pages.Cast<XmlNode>().FirstOrDefault(pageNode => pageNode.InnerText == page.Title) == null)
+        if (pages.Cast<XmlNode>().FirstOrDefault(pageNode => pageNode.InnerText == page.Name) == null)
         {
              //increment the page counter
             XmlNode pageCounter = databaseMetadata.GetElementsByTagName("pageCounter")[0] ?? throw new InvalidDataException("A database metadata file is malformed. Affected file: " + databaseMetadata);
@@ -182,7 +182,7 @@ public static class Indexer
             //we already have the wiki node, so we just have to find the pages node
             XmlNode pagesNode = wikiNode.SelectSingleNode("pages") ?? throw new InvalidDataException("A database metadata file is malformed. Affected file: " + databaseMetadata);
             //now, add the page to the pages node
-            pagesNode.AppendChild(databaseMetadata.CreateElement("page"))!.InnerText = page.Title;
+            pagesNode.AppendChild(databaseMetadata.CreateElement("page"))!.InnerText = page.Name;
             
             //the database metadata file is now up-to-date
         }

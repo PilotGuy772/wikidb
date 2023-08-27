@@ -15,6 +15,7 @@ internal class PageEnumerator : IEnumerator<Page>
     
     public bool MoveNext()
     {
+
         if(_childEnumerator != null && _childEnumerator.MoveNext())
         {
             return true;
@@ -23,10 +24,12 @@ internal class PageEnumerator : IEnumerator<Page>
         if (_currentIndex < _pages.Length - 1)
         {
             _currentIndex++;
-            _childEnumerator = _pages[_currentIndex].Children.GetEnumerator();
-            return _childEnumerator.MoveNext();
-        }
+            if (_pages[_currentIndex].Children.Any())
+                _childEnumerator = _pages[_currentIndex].Children.GetEnumerator();
 
+            return _childEnumerator?.MoveNext() ?? true; //in case there are no children to enumerate, don't even try to advance the child enumerator
+        }
+        
         return false;
     }
 

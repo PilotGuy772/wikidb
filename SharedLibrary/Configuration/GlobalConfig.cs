@@ -16,7 +16,7 @@ public class GlobalConfig
     //wiki connection
     public WikiConnection WikiConnection { get; private set; }
 
-    private GlobalConfig(DatabaseConnection databaseConnection, WikiConnection wikiConnection)
+    public GlobalConfig(DatabaseConnection databaseConnection, WikiConnection wikiConnection)
     {
         DatabaseConnection = databaseConnection;
         WikiConnection = wikiConnection;
@@ -25,9 +25,9 @@ public class GlobalConfig
     public static IEnumerable<DatabaseConnection> GetAllDatabases()
     {
         string pathToConfigFile;
-        if (File.Exists("~/.config/wikidb/config.xml"))
+        if (File.Exists(Path.Combine(Environment.GetEnvironmentVariable("HOME") ?? "", "/.config/wikidb/config.xml")))
         {
-            pathToConfigFile = "~/.config/wikidb/config.xml";
+            pathToConfigFile = Path.Combine(Environment.GetEnvironmentVariable("HOME") ?? "", "/.config/wikidb/config.xml");
         }
         else if(File.Exists("/etc/wikidb/config.xml"))
         {
@@ -46,14 +46,25 @@ public class GlobalConfig
                 comment.ParentNode?.RemoveChild(comment);
 
         XmlNodeList databaseNodes = doc.GetElementsByTagName("database");
-        return from XmlNode databaseNode in databaseNodes
-            let name =
-                databaseNode["name"]?.InnerText ??
-                throw new InvalidDataException("The configuration file is malformed.")
-            let root = 
-                databaseNode["root"]?.InnerText ??
-                throw new InvalidDataException("The configuration file is malformed.")
-            select new DatabaseConnection(name, root);
+        List<DatabaseConnection> databaseConnections = new();
+        foreach (XmlNode databaseNode in databaseNodes)
+        {
+            XmlDocument dbDoc = new();
+            string pathToDbRoot = (databaseNode["root"]?.InnerText ?? throw new InvalidDataException(
+                "A database metadata file is malformed. Affected database: \"" + databaseNode["name"]?.InnerText +
+                "\""))
+                .Replace("~", Environment.GetEnvironmentVariable("HOME") ?? "");
+            
+            
+            dbDoc.Load(Path.Combine(pathToDbRoot, "database.xml"));
+            
+            string name = dbDoc.GetElementsByTagName("name")[0]?.InnerText ?? throw new InvalidDataException("A database metadata file is malformed. Affected database: \"" + databaseNode["name"]?.InnerText + "\"");
+            int pages = int.Parse(dbDoc.GetElementsByTagName("pageCounter")[0]?.InnerText ?? throw new InvalidDataException("A database metadata file is malformed. Affected database: \"" + databaseNode["name"]?.InnerText + "\""));
+            
+            databaseConnections.Add(new DatabaseConnection(name, databaseNode["root"]?.InnerText ?? "", pages));
+        }
+
+        return databaseConnections;
     }
 
     public static GlobalConfig ReadFromConfigFile(string? db, string? wiki)
@@ -217,4 +228,64 @@ public class GlobalConfig
         return new GlobalConfig(defaultDatabase, defaultWiki);
     }
 
+    public static IEnumerable<WikiConnection> GetAllWikis()
+    {
+        string pathToConfigFile;
+        if (File.Exists(Path.Combine(Environment.GetEnvironmentVariable("HOME") ?? string.Empty, ".config/wikidb/config.xml")))
+        {
+            pathToConfigFile = Path.Combine(Environment.GetEnvironmentVariable("HOME") ?? string.Empty, ".config/wikidb/config.xml");
+        }
+        else if(File.Exists("/etc/wikidb/config.xml"))
+        {
+            pathToConfigFile = "/etc/wikidb/config.xml";
+        }
+        else
+            throw new FileNotFoundException("Could not find config file.");
+        
+        XmlDocument doc = new();
+        doc.Load(pathToConfigFile);
+        //remove comments cuz I guess System.Xml doesn't do that for you
+        XmlNodeList? comments = doc.SelectNodes("//comment()");
+        //remove all comments
+        if (comments != null)
+            foreach (XmlNode comment in comments)
+                comment.ParentNode?.RemoveChild(comment);
+        
+        XmlNodeList wikiNodes = doc.GetElementsByTagName("wiki");
+
+        return from XmlNode wikiNode in wikiNodes
+            let name =
+                wikiNode["name"]?.InnerText ??
+                throw new InvalidDataException("The configuration file is malformed.")
+            let url = 
+                wikiNode["url"]?.InnerText ??
+                throw new InvalidDataException("The configuration file is malformed.")
+            let downloadReferencedImage =
+                wikiNode["downloadReferencedImage"]?.InnerText == "true"
+            let injections = (from XmlNode injectionNode in wikiNode["injections"]?.ChildNodes ?? null //injections are not mandatory
+                    let destination =
+                    injectionNode["destination"]?.InnerText ??
+                    throw new InvalidDataException("The configuration file is malformed.")
+                let path =
+                    injectionNode["path"]?.InnerText ??
+                    throw new InvalidDataException("The configuration file is malformed.")
+                let place =
+                    injectionNode["place"]?.InnerText == "before" //default is after. If an invalid value is specified, default.
+                select new Injection(destination, path, place)).ToList()
+            
+            let removals = (from XmlNode removalNode in wikiNode["removals"]?.ChildNodes ?? null       //removals are not mandatory
+                let type = removalNode.ChildNodes[0].Name switch
+                {
+                    "id" => RemovalType.Id,
+                    "xpath" => RemovalType.Xpath,
+                    "tag" => RemovalType.TagType,
+                    _ => throw new InvalidDataException("The configuration file is malformed. thing: " + removalNode.ChildNodes[0].Name)
+                }
+                let value =
+                    removalNode.ChildNodes[0].InnerText ??
+                    throw new InvalidDataException("The configuration file is malformed.")
+                select new Removal(type, value)).ToList()
+            
+            select new WikiConnection(name, url, downloadReferencedImage, injections, removals);
+    }
 }

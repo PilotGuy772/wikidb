@@ -78,7 +78,7 @@ public class Sanitizer
         
         //return the sanitized page
         //this is almost a copy of the argument page except for the modified HTML content.
-        return new Page(page.Children, page.Title, doc.DocumentNode.InnerHtml, page.Parent, page.Wiki, page.Url, page.Path);
+        return new Page(page.Children, page.Name, doc.DocumentNode.InnerHtml, page.Parent, page.Wiki, page.Url, page.Path);
 
         string ProcessContentInjections(string html, string url)
         {

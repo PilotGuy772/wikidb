@@ -37,10 +37,17 @@ public class DatabaseMetadata
      * 
      */
 
+    
+    /// <summary>
+    /// Returns an IEnumerable of WikiReferences containing the basic metadata for each wiki in the database.
+    /// </summary>
+    /// <param name="connection">The target database to get wikis from</param>
+    /// <returns></returns>
+    /// <exception cref="InvalidDataException">If any metadata or configuration files are malformed or missing.</exception>
     public static IEnumerable<WikiReference> GetBasicMetadata(DatabaseConnection connection)
     {
         XmlDocument doc = new();
-        doc.Load($"{connection.Path}/database.xml"); //all metadata files keep the .xml extension
+        doc.Load(Path.Combine(connection.Path.Replace("~", Environment.GetEnvironmentVariable("HOME")), "database.xml")); //all metadata files keep the .xml extension
         
         XmlNode databaseNode = doc.GetElementsByTagName("database")[0] ?? throw new InvalidDataException("A database metadata file is malformed. Affected database: \"" + connection.Name + "\"");
         string name = databaseNode["name"]?.InnerText ?? throw new InvalidDataException("A database metadata file is malformed. Affected database: \"" + connection.Name + "\"");
@@ -59,11 +66,16 @@ public class DatabaseMetadata
                                     .Cast<XmlNode>()
                                     .Select(x => x.InnerText)
                                     .ToArray() 
-                            ?? throw new InvalidDataException("A database metadata file is malformed. Affected database: \"" + connection.Name + "\"") 
+                            ?? throw new InvalidDataException("A database metadata file is malformed. Affected database: \"" + connection.Name + "\"")
                 select new WikiReference(wikiName, pages)).ToArray();
     }
     
     
+    /// <summary>
+    /// Gets a PageCollection representing all pages in the requested database and wiki.
+    /// </summary>
+    /// <param name="config">The GlobalConfig object containing references to the desired wiki and database to get pages from</param>
+    /// <returns>A PageCollection representing all pages in the requested wiki and database</returns>
     public static PageCollection GetPageCollection(GlobalConfig config) => 
         new PageCollection(
             GetBasicMetadata(config.DatabaseConnection)
@@ -80,6 +92,12 @@ public class DatabaseMetadata
          * 3. return a new PageCollection from the IEnumerable<Page>.
          */
         
+        
+    /// <summary>
+    /// Gets a PageCollection representing all pages in the requested database and wiki without returning the actual content of the page.
+    /// </summary>
+    /// <param name="config">The GlobalConfig object containing references to the desired wiki and database to get pages from</param>
+    /// <returns>A PageCollection representing all pages in the requested wiki and database</returns>
     public static PageCollection GetPageCollectionWithoutContent(GlobalConfig config) => 
         new PageCollection(
             GetBasicMetadata(config.DatabaseConnection)
@@ -87,6 +105,24 @@ public class DatabaseMetadata
                 .Pages//get all pages
                 .Where(x => !x.Contains('/'))//filter out child pages
                 .Select(x => PageMetadata.GetPageWithoutContent(x, config)));//get the entire page for each except for content
-    
-    
+
+
+    /// <summary>
+    /// Returns a PageCollection representing all pages in the requested database.
+    /// </summary>
+    /// <param name="database"></param>
+    /// <returns></returns>
+    public static PageCollection GetPageCollectionWithoutContent(DatabaseConnection database)
+    {
+        IEnumerable<WikiReference> wikis = GetBasicMetadata(database);
+        List<Page> pages = new();
+        
+        foreach (WikiReference wiki in wikis)
+        {
+            pages.AddRange(wiki.Pages.Where(x => !x.Contains('/')).Select(x => PageMetadata.GetPageWithoutContent(x,
+                new GlobalConfig(database, new WikiConnection(wiki.Name, "", false, Array.Empty<Injection>(), Array.Empty<Removal>())))));
+        }
+
+        return new PageCollection(pages);
+    }
 }

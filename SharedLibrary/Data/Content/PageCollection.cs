@@ -4,7 +4,7 @@ namespace SharedLibrary.Data.Content;
 
 public class PageCollection : IEnumerable<Page>
 {
-    private IEnumerable<Page> _pages;
+    private readonly IEnumerable<Page> _pages;
     public int Count => _pages.Count();
 
     public PageCollection(IEnumerable<Page> pages)

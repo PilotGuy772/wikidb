@@ -25,14 +25,14 @@ public static class Putter
 
         if (stdout)
         {
-            Console.WriteLine("<!-- " + page.Title + " - Downloaded with WikiGet -->\n\n" + page.Content);
+            Console.WriteLine("<!-- " + page.Name + " - Downloaded with WikiGet -->\n\n" + page.Content);
             return;
         }
 
         if (config.TargetPages.Length <= 1) return;
         
         string where = config.Output == null ? "./" : config.Output;
-        string path = Path.Combine(where, page.Title + ".html");
+        string path = Path.Combine(where, page.Name + ".html");
         bool allowWrite = config.ForceOverwrite || CheckForFile(path);
                 
         if (allowWrite)

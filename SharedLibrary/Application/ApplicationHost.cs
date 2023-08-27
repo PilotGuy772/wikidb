@@ -1,4 +1,4 @@
-using SharedLibrary.Configuration;
+/*using SharedLibrary.Configuration;
 
 namespace SharedLibrary.Application;
 
@@ -68,4 +68,4 @@ public class ApplicationHost
         }
         return 0;
     }
-}
+}*/
