@@ -32,7 +32,7 @@ internal static class SearchItems
             requestedColumns.Add("name");
         
         //get all databases
-        IEnumerable<DatabaseConnection> databases = GlobalConfig.GetAllDatabases();
+        IEnumerable<DatabaseConnection> databases = GlobalConfig.GetAllDatabases().OrderBy(x => x.Name);
         
         //iterate through each database
         foreach (DatabaseConnection database in databases)
@@ -84,7 +84,7 @@ internal static class SearchItems
             requestedColumns.Add("name");
         
         //get all wikis
-        IEnumerable<WikiConnection> wikis = GlobalConfig.GetAllWikis();
+        IEnumerable<WikiConnection> wikis = GlobalConfig.GetAllWikis().OrderBy(x => x.Name);
         
         //iterate through each wiki
         foreach (WikiConnection wiki in wikis)
@@ -148,9 +148,9 @@ internal static class SearchItems
         List<Page> pages = new();
         foreach (WikiReference wiki in wikis)
         {
-            pages.AddRange(wiki.Pages.Select(x => PageMetadata.GetPageWithoutContent(x, databaseConnections.First(x => x.Name.Equals(wiki.Database)), wiki.Name)));
+            pages.AddRange(wiki.Pages.Select(x => PageMetadata.GetPageWithoutContent(x, databaseConnections.First(y => y.Name.Equals(wiki.Database)), wiki.Name)));
         }
-        PageCollection pageCollection = new(pages);
+        PageCollection pageCollection = new(pages.OrderBy(x => x.Name));
         
         //now we can finally iterate through the pages
         

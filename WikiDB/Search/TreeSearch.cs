@@ -35,12 +35,17 @@ internal static class TreeSearch
         else
             requestedColumns.Add("name");
 
-        IEnumerable<DatabaseConnection> databaseConnections = databases.ToList();
-        IEnumerable<WikiConnection> wikiConnections = wikis.ToList();
-        foreach (DatabaseConnection database in databaseConnections)
+        IEnumerable<DatabaseConnection> databaseConnectionsOld = databases.ToList().OrderBy(x => x.Name);
+        IEnumerable<WikiConnection> wikiConnectionsOld = wikis.ToList().OrderBy(x => x.Name);
+        
+        //avoid multiple enumeration warnings
+        IEnumerable<DatabaseConnection> connections = databaseConnectionsOld as DatabaseConnection[] ?? databaseConnectionsOld.ToArray();
+        IEnumerable<WikiConnection> wikiConnections = wikiConnectionsOld as WikiConnection[] ?? wikiConnectionsOld.ToArray();
+        foreach (DatabaseConnection database in connections)
         {
             
-            bool isLastDatabase = database.Equals(databaseConnections.Last());
+
+            bool isLastDatabase = database.Equals(connections.Last());
             
             //draw a row for the database and its information
             Console.Write("|- ");
@@ -77,7 +82,7 @@ internal static class TreeSearch
             \*/
             
             List<string> alreadySeenWikis = new();
-            PageCollection pages = DatabaseMetadata.GetPageCollectionWithoutContent(database);
+            PageCollection pages = new(DatabaseMetadata.GetPageCollectionWithoutContent(database).OrderBy(x => x.Name));
 
             foreach (Page page in pages)
             {
