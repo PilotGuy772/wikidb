@@ -67,7 +67,7 @@ public class DatabaseMetadata
                                     .Select(x => x.InnerText)
                                     .ToArray() 
                             ?? throw new InvalidDataException("A database metadata file is malformed. Affected database: \"" + connection.Name + "\"")
-                select new WikiReference(wikiName, pages)).ToArray();
+                select new WikiReference(wikiName, pages, connection.Name)).ToArray();
     }
     
     

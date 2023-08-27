@@ -4,11 +4,13 @@ namespace SharedLibrary.Data.Meta;
 public struct WikiReference
 {
     public string Name;
+    public string Database;
     public string[] Pages;
 
-    public WikiReference(string wikiName, string[] pages)
+    public WikiReference(string wikiName, string[] pages, string databaseName)
     {
         Name = wikiName;
         Pages = pages;
+        Database = databaseName;
     }
 }
