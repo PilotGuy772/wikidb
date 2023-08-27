@@ -52,9 +52,9 @@ public class ApplicationHost
                     break;
                 /*case ArgumentException:
                     break;*/
-                case InvalidOperationException:
+                /*case InvalidOperationException:
                     Console.Error.WriteLine("hint: run wikidb -bD <database> to initialize the database.");
-                    break;
+                    break;*/
                 case XPathException:
                     Console.Error.WriteLine("hint: verify the correctness of your XPath queries in the config file.");
                     break;

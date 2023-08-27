@@ -28,12 +28,15 @@ public class ApplicationHost
     {
         //this is actually super simple. It just involves including a database.xml file and a pages/ directory.
         //first, create the pages/ directory. This will fill in any missing files along the way.
-        Directory.CreateDirectory(Path.Combine(connection.Path, "/pages/"));
+        string path = connection.Path.Contains('~')
+            ? connection.Path.Replace("~", Environment.GetEnvironmentVariable("HOME"))
+            : connection.Path;
+        Directory.CreateDirectory(Path.Combine(path, "pages/"));
         
         //then, copy the default metadata file to the database.xml file. This is a hardcoded constant.
         const string defaultDatabaseMetadata = """<?xml version="1.0" encoding="UTF-8"?> <database> <name>{}</name> <wikis/> <pageCounter>0</pageCounter> </database>""";
         string save = defaultDatabaseMetadata.Replace("{}", connection.Name);
-        File.WriteAllText(Path.Combine(connection.Path, "/database.xml"), save);
+        File.WriteAllText(Path.Combine(path, "database.xml"), save);
         
         //all done! WikiGet and WikiDB should now be able to interface with this database.
     }

@@ -25,9 +25,9 @@ public class GlobalConfig
     public static IEnumerable<DatabaseConnection> GetAllDatabases()
     {
         string pathToConfigFile;
-        if (File.Exists(Path.Combine(Environment.GetEnvironmentVariable("HOME") ?? "", "/.config/wikidb/config.xml")))
+        if (File.Exists(Path.Combine(Environment.GetEnvironmentVariable("HOME") ?? "", ".config/wikidb/config.xml")))
         {
-            pathToConfigFile = Path.Combine(Environment.GetEnvironmentVariable("HOME") ?? "", "/.config/wikidb/config.xml");
+            pathToConfigFile = Path.Combine(Environment.GetEnvironmentVariable("HOME") ?? "", ".config/wikidb/config.xml");
         }
         else if(File.Exists("/etc/wikidb/config.xml"))
         {

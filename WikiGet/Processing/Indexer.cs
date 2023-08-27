@@ -38,7 +38,11 @@ public static class Indexer
          *  </page>
          */
 
-        if (!File.Exists(Path.Combine(connection.Path, "database.xml")))
+        string path = connection.Path.Contains('~')
+            ? connection.Path.Replace("~", Environment.GetEnvironmentVariable("HOME"))
+            : connection.Path;
+        
+        if (!File.Exists(Path.Combine(path, "database.xml")))
         {
             throw new InvalidOperationException("The requested local database has not yet been initialized.");
         }
@@ -62,7 +66,7 @@ public static class Indexer
         // done
         
         //real quick, we have to generate the path where the page should be stored
-        page.Path = Path.Combine(connection.Path, page.Path ?? throw new NullReferenceException("how? how did you manage this?"));
+        page.Path = Path.Combine(path, page.Path ?? throw new NullReferenceException("how? how did you manage this?"));
         
         
         //update the parent's config file
@@ -141,7 +145,7 @@ public static class Indexer
         
         //update the database's metadata file
         XmlDocument databaseMetadata = new();
-        databaseMetadata.Load(Path.Combine(connection.Path, "database.xml"));
+        databaseMetadata.Load(Path.Combine(path, "database.xml"));
         
         XmlNodeList wikis = databaseMetadata.GetElementsByTagName("wiki");
         XmlNode? wikiNode = wikis.Cast<XmlNode>()
@@ -198,6 +202,6 @@ public static class Indexer
         File.WriteAllText(page.Path + ".xml", pageMetadata.InnerXml);
         
         //then, write the database metadata file
-        databaseMetadata.Save(Path.Combine(connection.Path, "database.xml"));
+        databaseMetadata.Save(Path.Combine(path, "database.xml"));
     }
 }
