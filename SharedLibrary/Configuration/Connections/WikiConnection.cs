@@ -11,19 +11,22 @@ public class WikiConnection
     public Injection[] Injections { get; private set; } // stores the injections for the wiki. Note that the injections will be injected in the order they are stored in this array.
     public Removal[] Removals { get; private set; } // stores the removals for the wiki. Note that the removals will be removed in the order they are stored in this array. Removals are competed before injections.
     public bool DownloadReferencedImages { get; private set; }
-    
-    public WikiConnection(string name, string url, Injection[] injections, Removal[] removals)
-    {
-        Name = name;
-        Url = url;
-        Injections = injections;
-        Removals = removals;
-    }
+    public string BaseUrl { get; }
 
     public WikiConnection(string name, string url, bool downloadReferencedImage, IEnumerable<Injection> injections, IEnumerable<Removal> removals)
     {
         Name = name;
         Url = url;
+        
+        if (!string.IsNullOrEmpty(url)){
+            Uri uri = new(url);
+            BaseUrl = uri.Scheme + "://" + uri.Host;
+        }
+        else
+        {
+            BaseUrl = "";
+        }
+        
         DownloadReferencedImages = downloadReferencedImage; // NOT IMPLEMENTED YET
         Injections = injections.ToArray();
         List<Removal> removalsList = 
