@@ -75,11 +75,11 @@ public static class Indexer
         {
             string parentPath = page.Path ?? throw new NullReferenceException(
                 "how did this..? how did you do this? seriously. open an issue on GitHub and collect your reward. this should not be possible.");
-            parentPath = Path.GetDirectoryName(parentPath) ??
+            parentPath = Directory.GetParent(Path.GetDirectoryName(parentPath)!)?.FullName ??
                          throw new NullReferenceException(
                              "how did this even happen? this should not even be possible.");
             parentPath = Path.Combine(parentPath, page.Parent + ".html.xml");
-
+            
 
             if (!File.Exists(parentPath))
             {
@@ -109,7 +109,7 @@ public static class Indexer
             //now edit this XML file to add a new child tag.
             //first, get the entire page into memory
             XmlDocument parentMetadata = new();
-            parentMetadata.Load(parentPath);
+            parentMetadata.Load(parentPath); 
 
             //now, make the transformation
             XmlNode childrenNode = parentMetadata.GetElementsByTagName("children")[0] ??
@@ -169,7 +169,7 @@ public static class Indexer
         //if there is, we don't need to do anything
         //if there isn't, we need to add one
         XmlNodeList pages = databaseMetadata.GetElementsByTagName("page");
-        if (pages.Cast<XmlNode>().FirstOrDefault(pageNode => pageNode.InnerText == page.Name) == null)
+        if (pages.Cast<XmlNode>().FirstOrDefault(pageNode => pageNode.InnerText.Equals((page.Parent == null ? "" : page.Parent + "/") + page.Name)) == null)
         {
              //increment the page counter
             XmlNode pageCounter = databaseMetadata.GetElementsByTagName("pageCounter")[0] ?? throw new InvalidDataException("A database metadata file is malformed. Affected file: " + databaseMetadata);
@@ -186,7 +186,7 @@ public static class Indexer
             //we already have the wiki node, so we just have to find the pages node
             XmlNode pagesNode = wikiNode.SelectSingleNode("pages") ?? throw new InvalidDataException("A database metadata file is malformed. Affected file: " + databaseMetadata);
             //now, add the page to the pages node
-            pagesNode.AppendChild(databaseMetadata.CreateElement("page"))!.InnerText = page.Name;
+            pagesNode.AppendChild(databaseMetadata.CreateElement("page"))!.InnerText = (page.Parent == null ? "" : page.Parent + "/") + page.Name;
             
             //the database metadata file is now up-to-date
         }

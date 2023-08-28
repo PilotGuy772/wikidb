@@ -112,17 +112,16 @@ public class DatabaseMetadata
     /// </summary>
     /// <param name="database"></param>
     /// <returns></returns>
-    public static PageCollection GetPageCollectionWithoutContent(DatabaseConnection database)
+    public static IEnumerable<Page> GetPageCollectionWithoutContent(DatabaseConnection database)
     {
         IEnumerable<WikiReference> wikis = GetBasicMetadata(database);
         List<Page> pages = new();
-        
         foreach (WikiReference wiki in wikis)
         {
-            pages.AddRange(wiki.Pages.Where(x => !x.Contains('/')).Select(x => PageMetadata.GetPageWithoutContent(x,
-                new GlobalConfig(database, new WikiConnection(wiki.Name, "", false, Array.Empty<Injection>(), Array.Empty<Removal>())))));
+            pages.AddRange(wiki.Pages.Where(w => !w.Contains('/')).Select(x => PageMetadata.GetPageWithoutContent(x, database, wiki.Name)));
         }
 
-        return new PageCollection(pages);
+        return pages;
+        
     }
 }

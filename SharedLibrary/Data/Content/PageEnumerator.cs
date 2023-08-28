@@ -4,9 +4,9 @@ namespace SharedLibrary.Data.Content;
 
 internal class PageEnumerator : IEnumerator<Page>
 {
-    private Page[] _pages;
-    private int _currentIndex = -1;
-    private IEnumerator<Page>? _childEnumerator;
+    private readonly Page[] _pages;
+    private int CurrentIndex { get; set; } = -1;
+    private PageEnumerator? _childEnumerator;
 
     public PageEnumerator(IEnumerable<Page> pages)
     {
@@ -15,19 +15,26 @@ internal class PageEnumerator : IEnumerator<Page>
     
     public bool MoveNext()
     {
-
         if(_childEnumerator != null && _childEnumerator.MoveNext())
         {
             return true;
         }
         
-        if (_currentIndex < _pages.Length - 1)
+        
+        if (CurrentIndex < _pages.Length - 1)
         {
-            _currentIndex++;
-            if (_pages[_currentIndex].Children.Any())
-                _childEnumerator = _pages[_currentIndex].Children.GetEnumerator();
-
-            return _childEnumerator?.MoveNext() ?? true; //in case there are no children to enumerate, don't even try to advance the child enumerator
+            CurrentIndex++;
+            if (_pages[CurrentIndex].Children.Any())
+            {
+                _childEnumerator = _pages[CurrentIndex].Children.GetEnumerator() as PageEnumerator;
+            }
+            else
+            {
+                _childEnumerator?.Dispose();
+                _childEnumerator = null; // if the childEnumerator is done, _childEnumerator = null.
+            }
+                        
+            return true; 
         }
         
         return false;
@@ -35,11 +42,11 @@ internal class PageEnumerator : IEnumerator<Page>
 
     public void Reset()
     {
-        _currentIndex = -1;
+        CurrentIndex = -1;
         _childEnumerator = null;
     }
 
-    public Page Current => _childEnumerator?.Current ?? _pages[_currentIndex];
+    public Page Current => _childEnumerator is { CurrentIndex: > -1 } ? _childEnumerator.Current : _pages[CurrentIndex];
 
     object IEnumerator.Current => Current;
 

@@ -148,7 +148,7 @@ internal static class SearchItems
         List<Page> pages = new();
         foreach (WikiReference wiki in wikis)
         {
-            pages.AddRange(wiki.Pages.Select(x => PageMetadata.GetPageWithoutContent(x, databaseConnections.First(y => y.Name.Equals(wiki.Database)), wiki.Name)));
+            pages.AddRange(wiki.Pages.Where(w => !w.Contains('/')).Select(x => PageMetadata.GetPageWithoutContent(x, databaseConnections.First(y => y.Name.Equals(wiki.Database)), wiki.Name)));
         }
         PageCollection pageCollection = new(pages.OrderBy(x => x.Name));
         
@@ -163,7 +163,7 @@ internal static class SearchItems
                 switch (column)
                 {
                     case "name":
-                        Console.Write(page.Parent + page.Name); //add clarity as to whether the requested page is a subpage or not
+                        Console.Write(Path.Combine(page.Parent ?? "", page.Name)); //add clarity as to whether the requested page is a subpage or not
                         break;
                     case "url":
                         Console.Write(page.Url);

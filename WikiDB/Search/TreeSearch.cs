@@ -55,16 +55,17 @@ internal static class TreeSearch
                 {
                     case "name":
                         Console.Write(database.Name);
+                        Console.Write("  ");
                         break;
                     case "path":
                         Console.Write(database.Path);
+                        Console.Write("  ");
                         break;
                     case "pageCounter":
                         Console.Write(database.PageCounter + " pages");
+                        Console.Write("  ");
                         break;
                 }
-                
-                Console.Write("  ");
             }
             
             Console.Write("\n");
@@ -100,13 +101,14 @@ internal static class TreeSearch
                         {
                             case "name":
                                 Console.Write(wiki.Name);
+                                Console.Write("  ");
                                 break;
                             case "url":
-                                Console.Write(wiki.Url.Replace("{}", "<page_title>"));
+                                Console.Write(wiki.Url.Replace("{}", "<page>"));
+                                Console.Write("  ");
                                 break;
                         }
                         
-                        Console.Write("  ");
                     }
                     
                     Console.Write("\n");
@@ -122,19 +124,21 @@ internal static class TreeSearch
                     {
                         case "name":
                             Console.Write(page.Parent == null ? page.Name : Path.Combine(page.Parent, page.Name));
+                            Console.Write("  ");
                             break;
                         case "url":
                             Console.Write(page.Url);
+                            Console.Write("  ");
                             break;
                         case "wiki":
                             Console.Write(page.Wiki);
+                            Console.Write("  ");
                             break;
                         case "path":
                             Console.Write(page.Path);
+                            Console.Write("  ");
                             break;
                     }
-                    
-                    Console.Write("  ");
                 }
                 
                 Console.Write("\n");

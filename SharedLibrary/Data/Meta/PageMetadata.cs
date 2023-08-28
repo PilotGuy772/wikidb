@@ -66,7 +66,7 @@ public static class PageMetadata
         string url = pageNode["url"]?.InnerText ?? throw new InvalidDataException("A page metadata file is malformed. Affected page: " + title);
         string path = pageNode["path"]?.InnerText.Replace("{}", config.DatabaseConnection.Path) ?? throw new InvalidDataException("A page metadata file is malformed. Affected page: " + title);
         string[] children = pageNode["children"]?.ChildNodes.Cast<XmlNode>().Select(x => x.InnerText).ToArray() ?? throw new InvalidDataException("A page metadata file is malformed. Affected page: " + title);
-        IEnumerable<Page> childPages = children.Select(x => GetPageWithoutContent(x, config));
+        IEnumerable<Page> childPages = children.Select(x => GetPageWithoutContent(name + "/" + x, config));
 
         return new Page(childPages, name, $"<h2>{name}</h2><br/><p style=\"font-family: monospace\">For some reason, the actual content of the requested page was not retrieved.</p>", parent == "" ? null : parent, config.WikiConnection.Name, url, path);
     }
@@ -86,7 +86,7 @@ public static class PageMetadata
         string url = pageNode["url"]?.InnerText ?? throw new InvalidDataException("A page metadata file is malformed. Affected page: " + title);
         string path = pageNode["path"]?.InnerText.Replace("{}", database.Path) ?? throw new InvalidDataException("A page metadata file is malformed. Affected page: " + title);
         string[] children = pageNode["children"]?.ChildNodes.Cast<XmlNode>().Select(x => x.InnerText).ToArray() ?? throw new InvalidDataException("A page metadata file is malformed. Affected page: " + title);
-        IEnumerable<Page> childPages = children.Select(x => GetPageWithoutContent(x, database, wikiName));
+        IEnumerable<Page> childPages = children.Select(x => GetPageWithoutContent(name + "/" + x, database, wikiName));
 
         return new Page(childPages, name, $"<h2>{name}</h2><br/><p style=\"font-family: monospace\">For some reason, the actual content of the requested page was not retrieved.</p>", parent == "" ? null : parent, wikiName, url, path);
     }
