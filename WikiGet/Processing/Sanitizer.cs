@@ -117,7 +117,7 @@ public class Sanitizer
                         //generate the relative local path of the page
                         string relativePath = Path.Combine(connection.Name, title) + uri.Fragment;
                         //update the <a> tag to match
-                        href.Value = relativePath;
+                        href.Value = "/" + relativePath;
                     }
                     else
                     {
