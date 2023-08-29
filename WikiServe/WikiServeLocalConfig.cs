@@ -11,7 +11,7 @@ public class WikiServeLocalConfig
     // port: the port to listen on
     // the default is 80.
     // controlled by -p or --port.
-    public int Port { get; private set; } = 80;
+    public int Port { get; private set; } = 8080;
     
     // hostname: the hostname to listen on
     // the default is localhost.

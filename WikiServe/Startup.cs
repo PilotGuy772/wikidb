@@ -17,15 +17,16 @@ public class Startup
                 pattern: "{controller=Home}/{action=Index}/{id?}"
             );
             end.MapControllerRoute(
-                name: "page",
-                pattern: "{wiki}/{page}",
-                defaults: new { controller = "Page", action = "ViewPage" }
-            );
-            end.MapControllerRoute(
                 name: "wiki",
                 pattern: "{wiki}",
                 defaults: new { controller = "Page", action = "ViewWiki" }
             );
+            end.MapControllerRoute(
+                name: "page",
+                pattern: "{wiki}/{*page}",
+                defaults: new { controller = "Page", action = "ViewPage" }
+            );
+            
         });
     }
 }

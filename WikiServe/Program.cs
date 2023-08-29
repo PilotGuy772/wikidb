@@ -11,14 +11,15 @@ internal static class Program
     {
         //WikiServe uses a different program arrangement from the rest
         //It's an ASP.NET Core application, not a console app
-        IHost host = CreateHostBuilder(args).Build();
-        
         //initialize local config
         LocalConfig = WikiServeLocalConfig.CreateInstance();
         LocalConfig.ProcessCommandLineArguments(args);
         
         //initialize the global config
         GlobalConfig = GlobalConfig.ReadFromConfigFile(LocalConfig.TargetDatabase, null);
+        
+        
+        IHost host = CreateHostBuilder(args).Build();
 
         host.Run();
         
@@ -29,6 +30,9 @@ internal static class Program
         Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(webBuilder =>
             {
+                //if the hostname and port is specified, use those
+                webBuilder.UseUrls($"http://{LocalConfig.Hostname}:{LocalConfig.Port}");
+                
                 webBuilder.UseStartup<Startup>();
             });
 }

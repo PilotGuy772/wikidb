@@ -107,7 +107,7 @@ public class Sanitizer
                     Uri uri = new(fullPath);
                     fullPath = uri.Scheme + "://" + uri.Host + uri.AbsolutePath; //remove query string and fragment
                     //regex to isolate the title of the page from the URL given the format of the URL
-                    string pattern = Regex.Escape(connection.Url.Replace("{}", "")) + @"([^/?]+)";
+                    string pattern = Regex.Escape(connection.Url.Replace("{}", "")) + @"([^?]+)";
                     //apply regex
                     Match match = Regex.Match(fullPath, pattern);
                     //check if it's a success
@@ -117,7 +117,7 @@ public class Sanitizer
                         //generate the relative local path of the page
                         string relativePath = Path.Combine(connection.Name, title) + uri.Fragment;
                         //update the <a> tag to match
-                        href.Value = "/" + relativePath;
+                        href.Value = "/" + relativePath.ToLower();
                     }
                     else
                     {

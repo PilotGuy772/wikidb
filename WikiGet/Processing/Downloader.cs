@@ -23,10 +23,10 @@ public static class Downloader
             {
                 string content = response.Content.ReadAsStringAsync().Result;
 
-                string pageNew = page;
+                string pageNew = page.ToLower();
                 string? parent = null;
                 //we need to generate part of the path (everything except the database root) here because it will not be possible later on.
-                string partOfPath = Path.Combine("pages/", connection.Name, page + ".html"); 
+                string partOfPath = Path.Combine("pages/", connection.Name, page.ToLower() + ".html"); 
                 if (page.Contains('/'))
                 {
                     // oh no... this is a subpage
