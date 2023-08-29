@@ -1,0 +1,39 @@
+@model WikiServe.Models.PageModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="">
+    <head>
+        <title>@Model.Page.Name - @Model.Page.Wiki</title>
+        <style>
+            .wiki-db-header-text {
+                font-family: "JetBrains Mono", "Fira Code", "Fira Mono", "Consolas", "Courier New", monospace;
+                padding: 16px;
+            }
+            .wiki-db-header {
+                background-color: dimgrey;
+            }
+            .wiki-db-header-break {
+                padding-bottom: 25px;
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+        </style>
+        
+        @Model.Content.DocumentNode.SelectSingleNode("//head").InnerHtml
+    </head>
+    <body>
+        <!-- Include a small custom header -->    
+        <div class="wiki-db-header">
+            <p class="wiki-db-header-text">viewing @System.IO.Path.Combine(Model.Page.Parent ?? "", Model.Page.Name)  ⋅  stored locally at @System.IO.Path.GetFullPath(Model.Page.Path ?? "")  ⋅  downloaded with love by wikidb</p>
+            <hr class="wiki-db-header-break"/>
+        </div>
+    
+        @Model.Content.DocumentNode.SelectSingleNode("//body").InnerHtml
+    
+    </body>
+</html>

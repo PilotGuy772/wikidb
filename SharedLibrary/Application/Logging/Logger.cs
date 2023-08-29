@@ -6,7 +6,7 @@ namespace SharedLibrary.Application.Logging;
 /// </summary>
 public static class Logger
 {
-    public static int LogFilter { get; set; } = 3;
+    public static int LogFilter { get; set; } = 0;
     // 0 -> show nothing
     // 1 -> show only errors
     // 2 -> show only warnings and errors

@@ -9,9 +9,6 @@ namespace WikiDB;
 /// </summary>
 public class ApplicationHost
 {
-    /// <summary>
-    /// The application protocol to use for the current instance.
-    /// </summary>
     public WikiDBLocalConfig LocalConfig { get; private set; }
     
     public GlobalConfig GlobalConfig { get; private set; }

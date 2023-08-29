@@ -1,0 +1,27 @@
+@model WikiServe.Models.WikiModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>@Model.WikiReference.Name</title>
+    </head>
+    <body>
+        <div class="header">
+            <h1>@Model.WikiReference.Database/@Model.WikiReference.Name</h1>
+            <a asp-action="Index">Return</a>
+        </div>
+    
+        <p id="page-info">Member pages: </p>
+        <ul>
+            @foreach (string pageName in Model.WikiReference.Pages)
+            {
+                <li> <a class="page-link" asp-action="ViewPage" href="/@Model.WikiReference.Name/@pageName">@pageName</a> </li>
+            }
+        </ul>
+    </body>
+</html>

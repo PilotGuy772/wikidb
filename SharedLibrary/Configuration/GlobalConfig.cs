@@ -1,5 +1,4 @@
 using System.Xml;
-using SharedLibrary.Application.Logging;
 using SharedLibrary.Configuration.Connections;
 
 namespace SharedLibrary.Configuration;

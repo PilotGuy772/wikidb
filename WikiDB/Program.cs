@@ -1,5 +1,4 @@
-﻿using SharedLibrary.Application;
-using SharedLibrary.Configuration;
+﻿using SharedLibrary.Configuration;
 
 namespace WikiDB;
 

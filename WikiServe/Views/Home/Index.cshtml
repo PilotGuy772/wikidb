@@ -1,0 +1,44 @@
+@using SharedLibrary.Data.Meta
+@model WikiServe.Models.IndexModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        
+        <title>Local database @Model.DatabaseConnection.Name</title>
+        
+    </head>
+    <body>
+        <div class="header-container">
+            <h1>WikiDB Explorer</h1>
+            <hr/>
+            <h2>main</h2>
+            <hr class="header-separator"/>
+        </div>
+
+        <div class="body-container">
+            <div class="database-details-container">
+                <h3 class="database-details-header">This database:</h3>
+                <p class="database-details">Name: @Model.DatabaseConnection.Name</p>
+                <p class="database-details">Pages: @Model.DatabaseConnection.PageCounter</p>
+                <p class="database-details">URL: @Model.DatabaseConnection.Path</p>
+                <hr class="database-details-hr"/>
+            </div>
+            
+            <div class="wiki-list-container">
+                <h3>Wikis:</h3>
+                <ul>
+                    @foreach (WikiReference wiki in Model.WikiReferences)
+                    {
+                        <li> <a class="wiki-entry" href="/@wiki.Name">@wiki.Name</a> </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </body>
+</html>

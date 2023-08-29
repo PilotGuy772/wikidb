@@ -1,4 +1,5 @@
 using System.Xml;
+using SharedLibrary.Application.Logging;
 using SharedLibrary.Configuration;
 using SharedLibrary.Configuration.Connections;
 using SharedLibrary.Data.Content;
@@ -49,6 +50,29 @@ public static class PageMetadata
         //this is skipped in the nearly identical method GetPageWithoutContent.
         
         return new Page(childPages, name, content, parent == "" ? null : parent, config.WikiConnection.Name, url, path);
+    }
+
+    public static Page GetPage(string title, string wiki, DatabaseConnection connection)
+    {
+        string pathToMetadata = Path.Combine(connection.Path.Replace("~", Environment.GetEnvironmentVariable("HOME")),
+            "pages", wiki, title + ".html.xml");
+        
+        XmlDocument doc = new();
+        doc.Load(pathToMetadata);
+        
+        XmlNode pageNode = doc.GetElementsByTagName("page")[0] ?? throw new InvalidDataException("A page metadata file is malformed. Affected page: " + title);
+        string name = pageNode["name"]?.InnerText ?? throw new InvalidDataException("A page metadata file is malformed. Affected page: " + title);
+        string parent = pageNode["parent"]?.InnerText ?? throw new InvalidDataException("A page metadata file is malformed. Affected page: " + title);
+        string url = pageNode["url"]?.InnerText ?? throw new InvalidDataException("A page metadata file is malformed. Affected page: " + title);
+        string path = Path.Combine(connection.Path, pageNode["path"]?.InnerText ?? throw new InvalidDataException("A page metadata file is malformed. Affected page: " + title));
+        string[] children = pageNode["children"]?.ChildNodes.Cast<XmlNode>().Select(x => x.InnerText).ToArray() ?? throw new InvalidDataException("A page metadata file is malformed. Affected page: " + title);
+        IEnumerable<Page> childPages = children.Select(childName => GetPage(childName, wiki, connection));
+        //get content
+        Logger.Log(pageNode["path"]?.InnerText ?? "", InfoTier.Info);
+        string content = File.ReadAllText(path);
+        //this is skipped in the nearly identical method GetPageWithoutContent.
+        
+        return new Page(childPages, name, content, string.IsNullOrEmpty(parent) ? null : parent, wiki, url, path);
     }
 
     public static Page GetPageWithoutContent(string title, GlobalConfig config)

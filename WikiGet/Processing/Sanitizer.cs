@@ -115,7 +115,7 @@ public class Sanitizer
                     {
                         string title = match.Groups[1].Value;
                         //generate the relative local path of the page
-                        string relativePath = Path.Combine(connection.Name, title);
+                        string relativePath = Path.Combine(connection.Name, title) + uri.Fragment;
                         //update the <a> tag to match
                         href.Value = relativePath;
                     }
@@ -124,7 +124,8 @@ public class Sanitizer
                         //throw an exception i guess?
                         /*throw new Exception("The URL " + fullPath + " does not match the format of the URL " + connection.Url + " ... somehow?");*/
                         //okay nvm just notify
-                        Console.Error.WriteLine("warning: the URL " + fullPath + " does not match the format of the URL " + connection.Url + " ... somehow?");
+                        /*Console.Error.WriteLine("warning: the URL " + fullPath + " does not match the format of the URL " + connection.Url + " ... somehow?");*/
+                        //okay nvm actually just do nothing
                     }
                 }
             }

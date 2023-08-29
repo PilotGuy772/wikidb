@@ -1,10 +1,10 @@
-using SharedLibrary.Configuration;
-
 namespace WikiServe;
 
-public class LocalConfig : ILocalConfig
+public class WikiServeLocalConfig
 {
     //controls options for the local webserver
+    //this particular class will be a singleton
+    private static WikiServeLocalConfig? _instance = null;
     
     // OPTIONS //
     
@@ -25,15 +25,16 @@ public class LocalConfig : ILocalConfig
     // database: the database to serve files from
     // controlled by -D or --database.
     public string? TargetDatabase { get; private set; }
-    
-    // wiki: the wiki to target
-    // NOTE: this does nothing and is a technical requirement of the ILocalConfig interface.
-    public string? TargetWiki { get; private set; }
-    
-    // verbose: whether to print verbose output
-    // this is always true because nothing happens in the terminal unless verbose is true.
-    public bool Verbose { get; } = true;
 
+
+    private WikiServeLocalConfig() { }
+
+    public static WikiServeLocalConfig CreateInstance()
+    {
+        if (_instance != null) throw new InvalidOperationException("Only one may exist at a time, buckaroo");
+        _instance = new WikiServeLocalConfig();
+        return _instance;
+    }
 
     public void ProcessCommandLineArguments(string[] args)
     {

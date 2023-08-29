@@ -1,5 +1,4 @@
 using System.Xml.XPath;
-using SharedLibrary.Application;
 using SharedLibrary.Configuration;
 
 namespace WikiGet;
