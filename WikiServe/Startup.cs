@@ -9,6 +9,8 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+        app.UseStatusCodePagesWithReExecute("/Home/NotFound", "?code={0}&path={1}");
+        
         app.UseRouting();
         app.UseEndpoints(end =>
         {

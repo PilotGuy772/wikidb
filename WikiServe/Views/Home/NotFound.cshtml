@@ -1,0 +1,34 @@
+@model WikiServe.Models.NotFoundModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>Page Unavailable</title>
+    </head>
+    <body>
+        <div class="header">
+            <h1>@Model.StatusCode</h1>
+            <hr/>
+        </div>
+        <div class="content">
+            @if (Model.StatusCode == 404)
+            {
+                <p>The requested page is not available on the database</p>
+                
+                @if (Model.TargetWiki != null)
+                {
+                    <p>It looks like you were looking for this: </p>
+                    <p>@System.IO.Path.Combine(Model.TargetWiki, Model.TargetPage ?? "")</p>
+                    <p>Would you like to try to download it now?</p>
+                    <p>-not-implemented-</p>
+                }
+                
+            }
+        </div>    
+    </body>
+</html>
