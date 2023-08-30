@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Configuration file for WikiDB -->
+<!-- Make necessary changes and put this in -->
+<!-- ~/.config/wikidb/config.xml -->
+<config>
+    <defaults>
+        <databaseDefault>main</databaseDefault>
+        <wikiDefault>archwiki</wikiDefault>
+    </defaults>
+
+    <databases>
+        <database>
+            <name>main</name>
+            <root>~/.local/share/wikidb</root>
+        </database>
+    </databases>
+
+    <wikis>
+        <wiki>
+            <!-- The name of the wiki should be all lowercase, contain no spaces, and be a legal file name. If not, major problems will ensue. -->
+            <name>archwiki</name>
+            <!-- the url format for accessing pages on the wiki. Insert "{}" where the page's slug literal should be placed. -->
+            <url>https://wiki.archlinux.org/title/{}</url>
+            <!-- whether to download referenced images. If true, any images referenced by an <img> tag will be downloaded and put in a directory named after the downloaded page; this directory will go in (database_root)/media/(wiki)/(page)/. All <img> tags will have the "src" attributed updated to reference the new image. If this is set to false, <img> tags will not be updated. This step happens AFTER sanitization, so don't ban the <img> tag if you want this to work. -->
+            <!-- Not implemented yet. -->
+            <downloadReferencedImage>false</downloadReferencedImage>
+
+            <!-- HTML to inject into the document. -->
+            <injections>
+                <inject>
+                    <destination>//head</destination>
+                    <!-- the path to the file to treat as HTML injection. -->
+                    <!-- Optionally, you may use <content> containing literal HTML instead. -->
+                    <path>/etc/wikidb/wikis/archwiki/style</path>
+                    <!-- can be either 'before' or 'after.' This determines whether the requested element is placed at the top of the requested parent node's children or at the bottom. -->
+                    <place>before</place>
+                </inject>
+
+                <inject>
+                    <destination>//body</destination>
+                    <path>/etc/wikidb/wikis/archwiki/header</path>
+                    <place>before</place>
+                    <!-- Although not visible here, /etc/wikidb/wikis/archwiki/header uses custom markups to insert variables. -->
+                    <!-- These include: -->
+                    <!-- {unixtime} -> raw unix time of retrieval -->
+                    <!-- {year} -> year of retrieval -->
+                    <!-- {month} -> number of the month of retrieval -->
+                    <!-- {day} -> day of retrieval -->
+                    <!-- {hour} -> hour of retrieval -->
+                    <!-- {minute} -> minute of retrieval -->
+                    <!-- {second} -> second of retrieval -->
+                    <!-- {url} -> absolute url of the source of the page -->
+                    <!-- markup vars are inserted when the page is sanitized at download time. -->
+
+                </inject>
+            </injections>
+
+            <!-- HTML tags to remove from the downloaded document -->
+            <removals>
+                <remove>
+                    <id>archnavbar</id>
+                    <!-- you may also specify an XPath argument to the tag you wish to remove with -->
+                    <!-- <xpath>...</xpath> -->
+                </remove>
+                <remove>
+                    <id>mw-sidebar-button p-search p-vector-user-menu-overflow p-personal mw-sidebar-checkbox mw-panel-toc mw-navigation vector-toc-collapsed-checkbox p-lang-btn left-navigation right-navigation catlinks</id>
+                </remove>
+                <remove>
+                    <tag>script</tag> <!-- Finally, you may also specify banned tag types. This could be useful to ban <img> or <script>, for example. Note that banned tags are removed BEFORE HTML injections are inserted. You may seperate these by spaces, too. -->
+                </remove>
+            </removals>
+        </wiki>
+    </wikis>
+</config>
