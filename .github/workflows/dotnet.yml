@@ -25,6 +25,9 @@ jobs:
         
     - name: Restore dependencies
       run: dotnet restore
+
+    - name: Make scripts executable
+      run: chmod a+x ./pack.sh ; chmod a+x ./upload.sh
       
     - name: Build
       run: dotnet build --no-restore
