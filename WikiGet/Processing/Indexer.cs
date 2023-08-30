@@ -15,6 +15,9 @@ public static class Indexer
 {
     public static void IndexPage(Page page, DatabaseConnection connection, WikiGetLocalConfig localConfig, GlobalConfig globalConfig)
     {
+        //lowercase the name from now on
+        page = new Page(page.Children, page.Name.ToLower(), page.Content, page.Parent, page.Wiki, page.Url, page.Path);
+        
         /*
          * PROCESS:
          * 2. Generate a new XML config file for the page. All of the necessary information should be stored in the Page object itself.
