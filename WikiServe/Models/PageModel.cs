@@ -15,14 +15,14 @@ public class PageModel
     {
         Content = new HtmlDocument();
         Content.LoadHtml(page.Content);
-        HtmlNodeCollection titleTags = Content.DocumentNode.SelectNodes("//title");
+        /*HtmlNodeCollection titleTags = Content.DocumentNode.SelectNodes("//title");
         if (titleTags != null)
         {
             foreach (HtmlNode titleTag in titleTags)
             {
-                titleTag.Remove();
+                titleTag.
             }
-        }
+        }*/
         
         Page = page;
     }
