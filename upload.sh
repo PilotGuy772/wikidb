@@ -10,6 +10,6 @@ for DEB in "${DEB_FILES[@]}"; do
   jq -r '.upload_url' | sed -e 's/{?name,label}//')
   
   curl -H "Authorization: token $GITHUB_TOKEN" \
-  -H "Content-type: $(file -b --mimie-type $DEB)" \
+  -H "Content-type: $(file -b --mime-type $DEB)" \
   --data-binary @"$DEB" "$UPLOAD_URL"
 done
