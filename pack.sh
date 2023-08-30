@@ -16,6 +16,7 @@ PROJECT_DIRECTORY=$(pwd)
 # run this script from the root directory with the solution file in it
 # usage: ./script <runtime> <architecture> <version>
 # this will always package as a .deb for that runtime
+dotnet publish -c Release -r "$1"
 
 # this script will always deposit in ~/build/<package-name>
 mkdir "./build"
