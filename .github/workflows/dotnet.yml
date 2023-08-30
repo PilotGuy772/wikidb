@@ -43,6 +43,8 @@ jobs:
         release_name: Release v1.0.0
         draft: true
         prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Get Release ID
       uses: actions/github-script@v5
