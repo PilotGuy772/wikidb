@@ -3,7 +3,7 @@
 # constants: DEBIAN/control
 CONTROL_FILE=$(cat << EOF
 Package: wikidb
-Version: $3
+Version: (cat ./VERSION)
 Architecture: $2
 Maintainer: PilotGuy772
 Description: A simple utility to download and archive pages from the internet on local databases
