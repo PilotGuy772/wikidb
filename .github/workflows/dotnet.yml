@@ -51,7 +51,7 @@ jobs:
       id: get_release_id
       with:
         script: |
-          const github = context.github;
+          //const github = context.github;
           const { data } = await github.repos.getReleaseByTag({
             owner: context.repo.owner,
             repo: context.repo.repo,
