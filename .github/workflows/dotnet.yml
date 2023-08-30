@@ -47,20 +47,11 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Get Release ID
-      uses: actions/github-script@v5
       id: get_release_id
-      with:
-        script: |
-          //const github = context.github;
-          const { data } = await github.repos.getReleaseByTag({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            tag: 'v1.0.0' // Replace with your tag name
-          });
-          console.log(data.id);
+      run: echo "RELEASE_ID=${{ steps.create_release.ouputs.release_id }}"
 
     - name: Upload Deb Packages
       run: ./upload.sh
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        RELEASE_ID: ${{ steps.get_release_id.outputs.result }}
+        RELEASE_ID: ${{ steps.get_release_id.outputs.RELEASE_ID }}
