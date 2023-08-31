@@ -273,15 +273,15 @@ public class GlobalConfig
                 select new Injection(destination, path, place)).ToList()
             
             let removals = (from XmlNode removalNode in wikiNode["removals"]?.ChildNodes ?? null       //removals are not mandatory
-                let type = removalNode.ChildNodes[0].Name switch
+                let type = removalNode.ChildNodes[0]?.Name switch
                 {
                     "id" => RemovalType.Id,
                     "xpath" => RemovalType.Xpath,
                     "tag" => RemovalType.TagType,
-                    _ => throw new InvalidDataException("The configuration file is malformed. thing: " + removalNode.ChildNodes[0].Name)
+                    _ => throw new InvalidDataException("The configuration file is malformed. thing: " + removalNode.ChildNodes[0]?.Name)
                 }
                 let value =
-                    removalNode.ChildNodes[0].InnerText ??
+                    removalNode.ChildNodes[0]?.InnerText ??
                     throw new InvalidDataException("The configuration file is malformed.")
                 select new Removal(type, value)).ToList()
             
